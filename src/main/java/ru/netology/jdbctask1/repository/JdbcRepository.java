@@ -1,17 +1,26 @@
 package ru.netology.jdbctask1.repository;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 @Repository
 public class JdbcRepository {
 
-    String sqlscript = read(readProductNameByCustomerName.sql);
+    String scriptFile = "readProductNameByCustomerName.sql";
+
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    public JdbcRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
 
     private static String read(String scriptFileName) {
         try (InputStream is = new ClassPathResource(scriptFileName).getInputStream();
@@ -22,9 +31,7 @@ public class JdbcRepository {
         }
     }
 
-    public String getProductName(String name){
-        /* todo */
-        String productName = null;
-        return productName;
+    public List<String> getProductName(String name) {
+        return namedParameterJdbcTemplate.queryForList(read(scriptFile), Map.of("name", name), String.class);
     }
 }
